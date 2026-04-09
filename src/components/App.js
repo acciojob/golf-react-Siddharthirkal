@@ -1,4 +1,4 @@
-import React, { Component, useState } from "react";
+import React, { Component } from "react";
 import '../styles/App.css';
 
 class App extends Component {
@@ -9,24 +9,52 @@ class App extends Component {
             posi : 0,
             ballPosition: { left: "0px" }
         };
-        this.renderChoice = this.renderBallOrButton.bind(this)
-        this.buttonClickHandler = this.buttonClickHandler.bind(this)
+
+        this.renderChoice = this.renderBallOrButton.bind(this);
+        this.buttonClickHandler = this.buttonClickHandler.bind(this);
+        this.moveBall = this.moveBall.bind(this);   // REQUIRED FIX
     };
 
     buttonClickHandler() {
-   
-   }
-    renderBallOrButton() {
-		if (this.state.renderBall) {
-		    return <div className="ball" style={this.state.ballPosition}></div>
-		} else {
-		    return <button onClick={this.buttonClickHandler} >Start</button>
-		}
+        this.setState({
+            renderBall: true
+        });
     }
 
-    // bind ArrowRight keydown event
+    moveBall(event) {
+        if (event.keyCode === 39) {  // Right Arrow
+            this.setState((prevState) => {
+                const newPos = prevState.posi + 5;
+                return {
+                    posi: newPos,
+                    ballPosition: { left: newPos + "px" }
+                };
+            });
+        }
+    }
+
     componentDidMount() {
-      
+        document.addEventListener("keydown", this.moveBall);
+    }
+
+    renderBallOrButton() {
+        if (this.state.renderBall) {
+            return (
+                <div
+                    className="ball"
+                    style={{
+                        position: "relative",   
+                        ...this.state.ballPosition
+                    }}
+                ></div>
+            );
+        } else {
+            return (
+                <button className="start" onClick={this.buttonClickHandler}>
+                    Start
+                </button>
+            );
+        }
     }
 
     render() {
@@ -34,9 +62,8 @@ class App extends Component {
             <div className="playground">
                 {this.renderBallOrButton()}
             </div>
-        )
+        );
     }
 }
-
 
 export default App;
